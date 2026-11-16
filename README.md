@@ -37,6 +37,16 @@ Pass only the public token and stream id to the page:
 res.json({ stream: stream.id, token: stream.publicToken });
 ```
 
+## Full working example
+
+See [`examples/`](./examples) for a server that creates a stream and a browser page that
+plays it with hls.js + the P2P adapter:
+
+```bash
+SEEDESS_API_KEY=key_… node examples/server.mjs
+open http://localhost:8787
+```
+
 ## Methods
 
 | Method | HTTP | Purpose |
