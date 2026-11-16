@@ -1,33 +1,85 @@
-# Seedess Node.js SDK
+# @seedess/node-sdk
 
-Official Node.js client for the [Seedess API](https://seedess.com/docs/api/).
+Official Seedess SDK for Node.js.
 
-> **Status:** planned for `0.1.0`. The API contract is live; this client is next.
+**Server-side only.** The SDK uses a secret API key (`key_…`) to create and control streams.
+Never ship it in a browser or a mobile app. Playback uses the separate `@seedess/*-p2p`
+packages and a per-stream public token (`pk_…`).
 
-## What it covers
-
-- create and refresh streams
-- read offload, CDN and P2P metrics
-- send per-session telemetry
-- manage server-side API keys and per-stream public tokens
-
-## Install (planned)
+## Install
 
 ```bash
-npm install @seedess/sdk
+npm install @seedess/node-sdk
 ```
 
-## Contract
+Node 18+.
 
-Generated from `contracts/api.json` in the Seedess monorepo and checked against the same
-JSON Schemas. See the [API reference](https://seedess.com/docs/api/) and
-[Libraries](https://seedess.com/docs/libraries/).
+## Use
+
+```js
+import { Seedess } from '@seedess/node-sdk';
+
+const seedess = new Seedess(process.env.SEEDESS_API_KEY);
+
+const stream = await seedess.createStream({
+  url: 'https://origin.example/master.m3u8',
+  id: 'demo',
+  live: true,
+});
+
+console.log(stream.publicToken);
+console.log(stream.playback.master);
+```
+
+Pass only the public token and stream id to the page:
+
+```js
+res.json({ stream: stream.id, token: stream.publicToken });
+```
+
+## Methods
+
+| Method | HTTP | Purpose |
+| --- | --- | --- |
+| `createStream(input)` | `POST /api/v1/streams` | Ingest a manifest, mint the public token. |
+| `getStream(id)` | `GET /api/v1/streams/:id` | Status, variants, segment count. |
+| `listStreams()` | `GET /api/v1/streams` | All streams in the tenant. |
+| `refreshStream(id)` | `POST /api/v1/streams/:id/refresh` | Pull new live segments. |
+| `disablePeers(id)` | `POST /api/v1/streams/:id/kill` | CDN only; playback continues. |
+| `enablePeers(id)` | `POST /api/v1/streams/:id/revive` | Re-enable peer delivery. |
+| `getMetrics(id)` | `GET /api/v1/streams/:id/metrics` | Offload and delivery counters. |
+| `sendTelemetry(input)` | `POST /api/v1/telemetry` | One session batch (public, rate limited). |
+
+`request(method, path, body)` is available for routes without a helper.
+
+## Errors
+
+```js
+import { SeedessError } from '@seedess/node-sdk';
+
+try {
+  await seedess.createStream({ url });
+} catch (error) {
+  if (error instanceof SeedessError) {
+    console.error(error.status, error.code, error.message);
+  }
+}
+```
+
+## Options
+
+```js
+new Seedess(apiKey, {
+  baseUrl: 'https://seedess.com',
+  fetch: customFetch, // tests or a proxy
+});
+```
 
 ## Links
 
 - Docs: https://seedess.com/docs/
 - API: https://seedess.com/docs/api/
-- Issues: https://github.com/Seedess/node/issues
+- Libraries: https://seedess.com/docs/libraries/
 
 ## License
 

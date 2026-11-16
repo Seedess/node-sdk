@@ -1,0 +1,46 @@
+{
+  "name": "@seedess/node-sdk",
+  "version": "0.1.0",
+  "description": "Official Seedess SDK for Node.js. Create streams, mint playback tokens, read offload metrics.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "seedess",
+    "sdk",
+    "video",
+    "streaming",
+    "p2p",
+    "api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Seedess/node-sdk.git"
+  },
+  "homepage": "https://seedess.com/docs/libraries/",
+  "bugs": {
+    "url": "https://github.com/Seedess/node-sdk/issues"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node --check src/index.js && node --test test/*.test.mjs",
+    "prepack": "npm run check"
+  }
+}
